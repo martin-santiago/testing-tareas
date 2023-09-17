@@ -10,6 +10,7 @@ class Sampler:
         self.tid = tid
         self.t = threading.Thread(target=self.sample, args=())
         self.active = True
+        self.callContextTreeData = {}
         
     def start(self):
         self.active = True
@@ -28,6 +29,43 @@ class Sampler:
                     code = frame.f_code.co_name
                     stack.append(code)
                 stack.reverse()
+                for index in range(len(stack)):
+                    if index not in self.callContextTreeData:
+                        self.callContextTreeData[index] = []
+                        self.callContextTreeData[index].append({stack[index]: 0})
+                    else:
+                        elementExists = False
+                        for element in self.callContextTreeData[index]:
+                            if stack[index] in element:
+                                element[stack[index]] += 1
+                                elementExists = True
+                        if not elementExists:
+                            self.callContextTreeData[index].append({stack[index]: 0})
+                #El contenido de CallContextTreeData es un diccionario donde la llave es el nivel del stack y el valor es una lista de diccionarios donde la llave es el nombre de la funcion y el valor es la cantidad de veces que se ha llamado. Algo como:
+                """ 
+                Para esta data (code1.py):
+                [
+    ['_bootstrap', '_bootstrap_inner', 'run', 'execute_script'],
+    ['_bootstrap', '_bootstrap_inner', 'run', 'execute_script', '<module>', 'main', 'foo', 'bar'],
+    ['_bootstrap', '_bootstrap_inner', 'run', 'execute_script', '<module>', 'main', 'foo', 'zoo'],
+    ['_bootstrap', '_bootstrap_inner', 'run', 'execute_script', '<module>', 'main', 'foo', 'zoo'],
+    ['_bootstrap', '_bootstrap_inner', 'run', 'execute_script', '<module>', 'main', 'foo', 'zoo', 'bar'],
+    ['_bootstrap', '_bootstrap_inner', 'run', 'execute_script', '<module>', 'main', 'foo'],
+    ['_bootstrap', '_bootstrap_inner', 'run', 'execute_script', '<module>', 'main', 'foo'],
+                ]
+                Da este resultado:
+                {   
+                    0: [{'_bootstrap': 7}],
+                    1: [{'_bootstrap_inner': 7}],
+                    2: [{'run': 7}],
+                    3: [{'execute_script': 7}],
+                    4: [{'<module>': 6}],
+                    5: [{'main': 6}],
+                    6: [{'foo': 6}],
+                    7: [{'bar': 1}, {'zoo': 3}],
+                    8: [{'bar': 1}]
+                }
+                """
                 print(stack)  # Esta linea imprime el stack despues de invertirlo la pueden comentar o descomentar si quieren
     
     def sample(self):
