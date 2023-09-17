@@ -11,6 +11,7 @@ class Sampler:
         self.t = threading.Thread(target=self.sample, args=())
         self.active = True
         self.callContextTreeData = {}
+        self.callers_stack = []
         
     def start(self):
         self.active = True
@@ -30,6 +31,13 @@ class Sampler:
                     stack.append(code)
                 stack.reverse()
                 for index in range(len(stack)):
+                    ##########################
+                    if self.callers_stack:
+                        current_caller = self.callers_stack[-1]
+                        pass
+                    self.callers_stack.append(stack[index])
+                    
+                    #########################
                     if index not in self.callContextTreeData:
                         self.callContextTreeData[index] = []
                         self.callContextTreeData[index].append({stack[index]: 0})
@@ -47,9 +55,17 @@ class Sampler:
                 [
     ['_bootstrap', '_bootstrap_inner', 'run', 'execute_script'],
     ['_bootstrap', '_bootstrap_inner', 'run', 'execute_script', '<module>', 'main', 'foo', 'bar'],
+    #################################
+    ['_bootstrap', '_bootstrap_inner', 'run', 'execute_script', '<module>', 'main', 'foo', 'bar', mmethod1],
+    ['_bootstrap', '_bootstrap_inner', 'run', 'execute_script', '<module>', 'main', 'foo', 'bar', mmethod1],
+    ['_bootstrap', '_bootstrap_inner', 'run', 'execute_script', '<module>', 'main', 'foo', 'bar', mmethod1],
+    #################################
     ['_bootstrap', '_bootstrap_inner', 'run', 'execute_script', '<module>', 'main', 'foo', 'zoo'],
     ['_bootstrap', '_bootstrap_inner', 'run', 'execute_script', '<module>', 'main', 'foo', 'zoo'],
     ['_bootstrap', '_bootstrap_inner', 'run', 'execute_script', '<module>', 'main', 'foo', 'zoo', 'bar'],
+    #################################
+    ['_bootstrap', '_bootstrap_inner', 'run', 'execute_script', '<module>', 'main', 'foo', 'zoo', 'bar'],
+    #################################
     ['_bootstrap', '_bootstrap_inner', 'run', 'execute_script', '<module>', 'main', 'foo'],
     ['_bootstrap', '_bootstrap_inner', 'run', 'execute_script', '<module>', 'main', 'foo'],
                 ]
@@ -65,6 +81,7 @@ class Sampler:
                     7: [{'bar': 1}, {'zoo': 3}],
                     8: [{'bar': 1}]
                 }
+                Revisar si es conevniente de que se guarde todo como lista en lugar de diccionario para el call context tree. O sino hacer un trabajo previo para pasar la info del diccionario a una lista ordenada para crear el arbol con los niveles. Fijarse en los casos con ###. Hay que identificar quien llama a quien y en que nivel se encuentra. Sería bueno implementar un call stack para cada hilo y que se vaya actualizando a medida que se van llamando funciones. Algo como lo que se hizo para instrumentor
                 """
                 print(stack)  # Esta linea imprime el stack despues de invertirlo la pueden comentar o descomentar si quieren
     
