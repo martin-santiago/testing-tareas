@@ -9,7 +9,7 @@ class FunctionRecord:
         self.max_time_execution = 0
         self.min_time_execution = 0
         self.avg_time_execution = 0
-        self.is_cacheable = True
+        self.is_cacheable = 1
         self.previous_args = 'EMPTY'
         self.previous_return_val = 'EMPTY'
 

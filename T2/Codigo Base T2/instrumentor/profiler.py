@@ -22,7 +22,7 @@ class Profiler(AbstractProfiler):
         record.freq += 1
         
         if record.previous_args != args and record.previous_args != 'EMPTY':
-            record.is_cacheable = False
+            record.is_cacheable = 0
         record.previous_args = args
         
 
@@ -37,7 +37,7 @@ class Profiler(AbstractProfiler):
         record = self.get_record(functionName)
         record.end_times.append(time.time())
         if record.previous_return_val != returnValue and record.previous_return_val != 'EMPTY':
-            record.is_cacheable = False
+            record.is_cacheable = 0
         record.previous_return_val = returnValue
         self.callers_stack.pop()  # Eliminamos la función actual de la pila.
 
