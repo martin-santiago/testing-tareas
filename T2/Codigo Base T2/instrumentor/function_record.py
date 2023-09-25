@@ -9,10 +9,13 @@ class FunctionRecord:
         self.max_time_execution = 0
         self.min_time_execution = 0
         self.avg_time_execution = 0
+        self.is_cacheable = True
+        self.previous_args = 'EMPTY'
+        self.previous_return_val = 'EMPTY'
 
     def print_report(self):
         print("{:<30} {:<10} {:<10} {:<10} {:<10} {:<10} {:<10}".format(self.functionName, str(self.freq), "{:.5f}".format(
-            self.avg_time_execution), "{:.5f}".format(self.max_time_execution), "{:.5f}".format(self.min_time_execution), 0, str(self.callers)))
+            self.avg_time_execution), "{:.5f}".format(self.max_time_execution), "{:.5f}".format(self.min_time_execution), str(self.is_cacheable), str(self.callers)))
 
     def calculate_execution_times(self):
         for i in range(len(self.start_times)):

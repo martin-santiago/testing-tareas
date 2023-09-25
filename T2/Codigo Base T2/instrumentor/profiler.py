@@ -20,6 +20,11 @@ class Profiler(AbstractProfiler):
         record = self.get_record(functionName)
         record.start_times.append(time.time())
         record.freq += 1
+        
+        if record.previous_args != args and record.previous_args != 'EMPTY':
+            record.is_cacheable = False
+        record.previous_args = args
+        
 
         if self.callers_stack:
             current_caller = self.callers_stack[-1]
@@ -31,6 +36,9 @@ class Profiler(AbstractProfiler):
     def fun_call_end(self, functionName, returnValue):
         record = self.get_record(functionName)
         record.end_times.append(time.time())
+        if record.previous_return_val != returnValue and record.previous_return_val != 'EMPTY':
+            record.is_cacheable = False
+        record.previous_return_val = returnValue
         self.callers_stack.pop()  # Eliminamos la función actual de la pila.
 
     # print report
