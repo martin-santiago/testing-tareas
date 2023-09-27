@@ -43,19 +43,19 @@ class Sampler:
                     if index not in self.callContextTreeData:
                         self.callContextTreeData[index] = []
                         if self.callers_stack:
-                            self.callContextTreeData[index].append({stack[index]: 1, "caller": self.callers_stack[-1]})
+                            self.callContextTreeData[index].append({"name": stack[index], "caller": self.callers_stack[-1], "counter": 1 })
                         if len(self.callers_stack) == 0:
-                            self.callContextTreeData[index].append({stack[index]: 1, "caller": None})
+                            self.callContextTreeData[index].append({"name": stack[index], "caller": None, "counter": 1})
 
                     else:
                         elementExists = False
                         for element in self.callContextTreeData[index]:
-                            if stack[index] in element:
-                                element[stack[index]] += 1
+                            if stack[index] == element["name"]:
+                                element["counter"] += 1
                                 elementExists = True
                         if not elementExists:
                             if self.callers_stack:
-                                self.callContextTreeData[index].append({stack[index]: 1, "caller": self.callers_stack[-1]})
+                                self.callContextTreeData[index].append({"name": stack[index], "caller": self.callers_stack[-1], "counter": 1})
 
                     
                     if index + 1 < len(stack):
@@ -105,4 +105,23 @@ class Sampler:
 
     def printReport(self):
         # Este metodo debe imprimir el reporte del call context tree
+        
+        # n_tabs = 1
+        # print(f"total ({self.callContextTreeData[0][0]['counter']} seconds)")
+
+        # for level, array in self.callContextTreeData.items():
+            
+        #     self.recursive_print(n_tabs, array)
+
+        #     n_tabs+=1
+        
         print(self.callContextTreeData)
+        pass
+        
+
+    def recursive_print(self, n_tabs, array):
+      # tab = "  "
+      # for dict in array:
+      #   print(f"{tab*n_tabs} {dict['name']} ({dict['counter']} seconds)" )
+      # self.recursive_print(n_tabs + 1)
+      pass
