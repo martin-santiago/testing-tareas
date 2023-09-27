@@ -30,17 +30,23 @@ class Sampler:
                     code = frame.f_code.co_name
                     stack.append(code)
                 stack.reverse()
+                self.callers_stack = []
                 for index in range(len(stack)):
                     ##########################
-                    if self.callers_stack:
+                    """ if self.callers_stack:
                         current_caller = self.callers_stack[-1]
-                        pass
-                    self.callers_stack.append(stack[index])
-                    
+                        if current_caller != stack[index]:
+                            self.callers_stack.append(stack[index])
+                            
+                    self.callers_stack.append(stack[index]) """
                     #########################
                     if index not in self.callContextTreeData:
                         self.callContextTreeData[index] = []
-                        self.callContextTreeData[index].append({stack[index]: 0})
+                        if self.callers_stack:
+                            self.callContextTreeData[index].append({stack[index]: 1, "caller": self.callers_stack[-1]})
+                        if len(self.callers_stack) == 0:
+                            self.callContextTreeData[index].append({stack[index]: 1, "caller": None})
+
                     else:
                         elementExists = False
                         for element in self.callContextTreeData[index]:
@@ -48,7 +54,14 @@ class Sampler:
                                 element[stack[index]] += 1
                                 elementExists = True
                         if not elementExists:
-                            self.callContextTreeData[index].append({stack[index]: 0})
+                            if self.callers_stack:
+                                self.callContextTreeData[index].append({stack[index]: 1, "caller": self.callers_stack[-1]})
+
+                    
+                    if index + 1 < len(stack):
+                        self.callers_stack.append(stack[index])
+                            
+
                 #El contenido de CallContextTreeData es un diccionario donde la llave es el nivel del stack y el valor es una lista de diccionarios donde la llave es el nombre de la funcion y el valor es la cantidad de veces que se ha llamado. Algo como:
                 """ 
                 Para esta data (code1.py):
@@ -92,4 +105,4 @@ class Sampler:
 
     def printReport(self):
         # Este metodo debe imprimir el reporte del call context tree
-        pass
+        print(self.callContextTreeData)
