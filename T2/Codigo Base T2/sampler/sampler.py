@@ -10,7 +10,7 @@ class Sampler:
         self.tid = tid
         self.t = threading.Thread(target=self.sample, args=())
         self.active = True
-        self.callContextTree = None
+        self.callContextTree = {}
         self.stackList = []
 
     def start(self):
@@ -30,7 +30,7 @@ class Sampler:
                     stack.append(code)
                 stack.reverse()
                 self.stackList.append(stack)
-                """ print(stack) """
+                print(stack)
 
     def sample(self):
         while self.active:
@@ -39,26 +39,17 @@ class Sampler:
 
     def printReport(self):
 
-        self.callContextTree = self.throughFirstStack(self.stackList[0], 0)
-        for stack in self.stackList[1:]:
+        for stack in self.stackList:
             for level in range(len(stack)):
                 self.createCallContextTree(stack, level, self.callContextTree)
         """ print(self.callContextTree) """
         self.printCallContextTree(self.callContextTree)
 
-    def throughFirstStack(self, stack, level):
-        name = stack[level]
-
-        new_element = {"name": name, "counter": 1,
-                       "level": level, "children": []}
-
-        if level + 1 < len(stack):
-            next_element = self.throughFirstStack(stack, level + 1)
-            new_element['children'].append(next_element)
-
-        return new_element
-
     def checkLevel(self, level, current_dict):
+        
+        if current_dict == {}:
+            return {'validated': False, 'dict': current_dict}
+        
         if current_dict['level'] == level:
             return {'validated': True, 'dict': None}
         else:
@@ -108,13 +99,19 @@ class Sampler:
             last_dict = validated_level['dict']
             new_element = {"name": name, "counter": 1,
                            "level": level, "children": []}
-            last_dict['children'].append(new_element)
+            if not last_dict:
+                last_dict['name'] = name
+                last_dict['counter'] = 1
+                last_dict['level'] = level
+                last_dict['children'] = []
+            else:
+                last_dict['children'].append(new_element)
 
     def printCallContextTree(self, current_dict):
         if current_dict['level'] == 0:
             print(f"Total ({current_dict['counter']} seconds)")
         print(
-            f"{' ' * (current_dict['level'] + 1)} {current_dict['name']} ({current_dict['counter']} seconds)")
+            f"{'  ' * (current_dict['level'] + 1)} {current_dict['name']} ({current_dict['counter']} seconds)")
         if current_dict['children']:
             for child in current_dict['children']:
                 self.printCallContextTree(child)

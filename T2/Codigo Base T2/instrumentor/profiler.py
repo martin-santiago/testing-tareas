@@ -25,7 +25,6 @@ class Profiler(AbstractProfiler):
             record.is_cacheable = 0
         record.previous_args = args
         
-
         if self.callers_stack:
             current_caller = self.callers_stack[-1]
             if current_caller != functionName and current_caller not in record.callers:
