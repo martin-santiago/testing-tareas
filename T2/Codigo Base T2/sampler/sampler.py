@@ -46,10 +46,10 @@ class Sampler:
         self.printCallContextTree(self.callContextTree)
 
     def checkLevel(self, level, current_dict):
-        
-        if current_dict == {}:
+
+        if not current_dict:
             return {'validated': False, 'dict': current_dict}
-        
+
         if current_dict['level'] == level:
             return {'validated': True, 'dict': None}
         else:
