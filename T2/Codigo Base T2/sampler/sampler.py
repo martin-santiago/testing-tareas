@@ -42,7 +42,6 @@ class Sampler:
         for stack in self.stackList:
             for level in range(len(stack)):
                 self.createCallContextTree(stack, level, self.callContextTree)
-        """ print(self.callContextTree) """
         self.printCallContextTree(self.callContextTree)
 
     def checkLevel(self, level, current_dict):
