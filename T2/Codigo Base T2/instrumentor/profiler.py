@@ -39,7 +39,7 @@ class Profiler(AbstractProfiler):
         if record.previous_return_val != returnValue and record.previous_return_val != 'EMPTY':
             record.is_cacheable = 0
         record.previous_return_val = returnValue
-        self.callers_stack.pop()  # Eliminamos la función actual de la pila.
+        self.callers_stack.pop()
 
     # print report
     def print_fun_report(self):
