@@ -43,7 +43,7 @@ class Sampler:
         for stack in self.stackList[1:]:
             for level in range(len(stack)):
                 self.createCallContextTree(stack, level, self.callContextTree)
-        print(self.callContextTree)
+        """ print(self.callContextTree) """
         self.printCallContextTree(self.callContextTree)
 
     def throughFirstStack(self, stack, level):
